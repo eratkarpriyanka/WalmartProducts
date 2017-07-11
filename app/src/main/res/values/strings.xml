@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">WalmartProducts</string>
+    <string name="app_message">"Bonjour PAUG "</string>
+    <string name="empty_list">No products available.</string>
+    <string name="no_products">No more products available yet!</string>
+    <string name="long_desc_title">About this product</string>
+    <string name="reviewed_by">reviewed by %1$s users</string>
+    <string name="available_in_stock">In stock</string>
+    <string name="not_in_stock">Not yet available</string>
+</resources>
