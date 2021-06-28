@@ -1,4 +1,8 @@
 package com.walmartlabstest.walmartproducts.models
 
-class ProductList {
-}
+import com.google.gson.annotations.SerializedName
+
+data class ProductList(
+    @SerializedName("products")
+    val listProduct: List<Product>
+)

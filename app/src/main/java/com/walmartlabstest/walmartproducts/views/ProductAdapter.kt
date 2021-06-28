@@ -1,29 +1,23 @@
 package com.walmartlabstest.walmartproducts.views
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.paging.PagedListAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import com.walmartlabstest.walmartproducts.R
 import com.walmartlabstest.walmartproducts.models.Product
-import java.util.*
+import com.walmartlabstest.walmartproducts.uiutils.IMAGE_BASE_URL
 
-class ProductAdapter(private val context: Context, private val productList: ArrayList<Product>?) :
-    RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
-    var customClickListener: CustomOnClickListener? = null
+class ProductAdapter :
+    PagedListAdapter<Product, ProductAdapter.ViewHolder>(PRODUCT_DIFF_CALLBACK) {
 
-    interface CustomOnClickListener {
-        fun onItemClick(view: View?, position: Int)
-    }
-
-    fun setClickListener(customClickListener: CustomOnClickListener?) {
-        this.customClickListener = customClickListener
-    }
+    private var productList = mutableListOf<Product>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val productCard =
@@ -32,45 +26,69 @@ class ProductAdapter(private val context: Context, private val productList: Arra
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val product = productList!![position]
-        val name = product.productName
-        if (!name.isEmpty()) {
-            holder.tvTitle.text = name
-        }
-        val price = product.price
-        if (!price.isEmpty()) {
-            holder.tvPrice.text = price
-        }
-        var image = product.productImage
-        if (!image.isEmpty()) {
-            image = IMAGE_BASE_URL + image
-            Picasso.get().load(image).placeholder(R.mipmap.ic_launcher).into(holder.ivImage)
-        }
-        val reviewRating = product.reviewRating
-        holder.ratingBar.rating = reviewRating
+        val product = getItem(position)
+        product?.let { holder.bindProduct(it) }
+        /* val product = productList[position]
+         val name = product.productName
+         holder.tvTitle.text = name
+
+         val price = product.price
+         holder.tvPrice.text = price
+
+         val reviewRating = product.reviewRating
+         holder.ratingBar.rating = reviewRating
+
+         var image = product.productImage
+         if (image.isNotEmpty()) {
+             image = IMAGE_BASE_URL + image
+             Picasso.get().load(image).placeholder(R.mipmap.ic_launcher).into(holder.ivImage)
+         }*/
     }
 
-    override fun getItemCount(): Int {
-        return productList?.size ?: 0
-    }
+    /*override fun getItemCount(): Int {
+        return productList.size
+    }*/
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var tvTitle: TextView
-        var ivImage: ImageView
-        var tvPrice: TextView
-        var ratingBar: RatingBar
+        var tvTitle = view.findViewById(R.id.title) as TextView
+        var ivImage = view.findViewById(R.id.thumbnail) as ImageView
+        var tvPrice = view.findViewById(R.id.price) as TextView
+        var ratingBar = view.findViewById(R.id.ratingBar) as RatingBar
 
-        init {
-            tvTitle = view.findViewById<View>(R.id.title) as TextView
-            ivImage = view.findViewById<View>(R.id.thumbnail) as ImageView
-            tvPrice = view.findViewById<View>(R.id.price) as TextView
-            ratingBar = view.findViewById<View>(R.id.ratingBar) as RatingBar
-            view.setOnClickListener { view ->
-                val position = adapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    customClickListener!!.onItemClick(view, position)
+        fun bindProduct(product: Product) {
+            with(product) {
+                val name = product.productName
+                tvTitle.text = name
+
+                val price = product.price
+                tvPrice.text = price
+
+                val reviewRating = product.reviewRating
+                ratingBar.rating = reviewRating
+
+                var image = product.productImage
+                if (image.isNotEmpty()) {
+                    image = IMAGE_BASE_URL + image
+                    Picasso.get().load(image).placeholder(R.mipmap.ic_launcher).into(ivImage)
                 }
             }
+        }
+    }
+
+    fun loadCourseList(productList: List<Product>) {
+        this.productList = productList.toMutableList()
+        notifyDataSetChanged()
+    }
+
+    companion object {
+        private val PRODUCT_DIFF_CALLBACK = object : DiffUtil.ItemCallback<Product>() {
+            override fun areItemsTheSame(oldProduct: Product, newProduct: Product) =
+                oldProduct.productId == newProduct.productId
+
+            override fun areContentsTheSame(
+                oldProduct: Product,
+                newProduct: Product
+            ) = oldProduct == newProduct
         }
     }
 }

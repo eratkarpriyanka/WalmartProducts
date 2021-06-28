@@ -1,21 +1,21 @@
 package com.walmartlabstest.walmartproducts.network
 
-import com.walmartlabstest.walmartproducts.models.ResponseGetProducts
+import com.walmartlabstest.walmartproducts.models.ProductList
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Call
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
 
-interface RestClient {
+interface IWalmartApi {
 
     @GET("walmartproducts/{pgNum}/{pgSize}")
-    fun getProductsApi(
-        @Path("pgNum") pageNumber: Long,
-        @Path("pgSize") pageSize: Long
-    ): Call<ResponseGetProducts?>?
+    suspend fun getProductsApi(
+        @Path("pgNum") pageNumber: Int,
+        @Path("pgSize") pageSize: Int
+    ): Response<ProductList>
 
     companion object {
         const val BASE_URL = "https://mobile-tha-server.firebaseapp.com/"
@@ -27,12 +27,13 @@ interface RestClient {
             .addInterceptor(logger)
             .build()
 
-        fun createService(): IWalmartsApi {
+        fun createService(): IWalmartApi {
             val retrofit = Retrofit.Builder()
-                .baseUrl(IWalmartsApi.BASE_URL)
+                .baseUrl(BASE_URL)
+                .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
-            return retrofit.create(IWalmartsApi::class.java)
+            return retrofit.create(IWalmartApi::class.java)
         }
     }
 }

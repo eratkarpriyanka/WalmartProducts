@@ -1,16 +1,10 @@
 package com.walmartlabstest.walmartproducts.network
 
-import com.walmartlabstest.walmartproducts.models.ResponseGetProducts
-import retrofit2.Call
-import retrofit2.http.GET
-import retrofit2.http.Path
+import com.walmartlabstest.walmartproducts.models.ProductList
+import retrofit2.Response
 
-class ProductRepository constructor(private val restClient: RestClient) {
-    fun getProductsApi(pageNumber: Long, pageSize: Long): Call<ResponseGetProducts?> {
-        return restClient.getProductsApi(pageNumber, pageSize)
-    }
-
-    companion object {
-        const val BASE_URL = "https://mobile-tha-server.firebaseapp.com/"
+class ProductRepository constructor(private val IWalmartApi: IWalmartApi) {
+    suspend fun getProductsApi(pageNumber: Int, pageSize: Int): Response<ProductList> {
+        return IWalmartApi.getProductsApi(pageNumber, pageSize)
     }
 }
