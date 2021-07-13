@@ -7,10 +7,10 @@ import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import com.walmartlabstest.walmartproducts.models.Product
 import com.walmartlabstest.walmartproducts.views.ProductDataSource
-import kotlinx.coroutines.Dispatchers
 
 class ProductViewModel() : ViewModel() {
-    var productLiveData: LiveData<PagedList<Product>>
+    private var dataSource: ProductDataSource = ProductDataSource()
+    private var productLiveData: LiveData<PagedList<Product>>
 
     init {
         val config = PagedList.Config.Builder()
@@ -25,11 +25,13 @@ class ProductViewModel() : ViewModel() {
             LivePagedListBuilder<String, Product> {
         val dataSourceFactory = object : DataSource.Factory<String, Product>() {
             override fun create(): DataSource<String, Product> {
-                return ProductDataSource()
+                return dataSource
             }
         }
         return LivePagedListBuilder(dataSourceFactory, config)
     }
 
     fun getWalmartProducts(): LiveData<PagedList<Product>> = productLiveData
+
+    fun getWalmartProductsFailure(): LiveData<String> = dataSource.getRequestFailureLiveData()
 }

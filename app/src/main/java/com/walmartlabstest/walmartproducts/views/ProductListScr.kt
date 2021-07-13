@@ -2,6 +2,7 @@ package com.walmartlabstest.walmartproducts.views
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -29,6 +30,10 @@ class ProductListScr : AppCompatActivity() {
             hideProgressBar()
             hideEmptyView()
             adapter.submitList(pagedListProducts)
+        })
+
+        viewModel.getWalmartProductsFailure().observe(this, { errorMessage ->
+            Toast.makeText(this, "Error retrieving products !!!", Toast.LENGTH_SHORT).show()
         })
     }
 

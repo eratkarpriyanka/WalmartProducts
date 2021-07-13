@@ -1,11 +1,13 @@
 package com.walmartlabstest.walmartproducts.views
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PageKeyedDataSource
 import com.walmartlabstest.walmartproducts.models.Product
 import com.walmartlabstest.walmartproducts.network.IWalmartApi
 import kotlinx.coroutines.*
+
 
 class ProductDataSource : PageKeyedDataSource<String, Product>() {
 
@@ -19,8 +21,11 @@ class ProductDataSource : PageKeyedDataSource<String, Product>() {
     }
 
     private fun onError(message: String) {
-        errorMessage.value = message
-        loading.value = false
+        errorMessage.postValue(message)
+    }
+
+    fun getRequestFailureLiveData(): LiveData<String> {
+        return errorMessage
     }
 
     override fun loadInitial(
